@@ -1,9 +1,24 @@
-import React from 'react'
+import { db } from "@/db";
+import { notFound } from "next/navigation";
+import React from "react";
+import DesignPreview from "./DesignPreview";
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+interface IProps {
+  searchParams: {
+    [key: string]: string | string[] | undefined;
+  };
 }
+const page = async ({ searchParams }: IProps) => {
+  const { id } = searchParams;
+  if (!id || typeof id !== "string") return notFound();
 
-export default page
+  const configuration = await db.configuration.findUnique({ where: { id } });
+
+  if(!configuration) return notFound();
+
+  return(
+    <DesignPreview configuration={configuration}/>
+  )
+};
+
+export default page;
