@@ -72,7 +72,7 @@ const Page = async () => {
   });
 
   const WEEKLY_GOAL = 500;
-  const MONTHLY_GOAL = 200;
+  const MONTHLY_GOAL = 2000;
   return (
     <div className="max-w-7xl w-full mx-auto flex flex-col sm:gap-4 sm:py-4">
       <div className="flex flex-col gap-16">
