@@ -35,8 +35,9 @@ export async function POST(req: Request) {
         throw new Error('Invalid request metadata')
       }
 
-    //   const billingAddress = session.customer_details!.address
-    //   const shippingAddress = session.shipping_details!.address
+      const billingAddress = session.customer_details!.address
+    //   @ts-ignore
+      const shippingAddress = session.shipping!.address
 
       const updatedOrder = await db.order.update({
         where: {
@@ -44,26 +45,26 @@ export async function POST(req: Request) {
         },
         data: {
           isPaid: true,
-        //   shippingAddress: {
-        //     create: {
-        //       name: session.customer_details!.name!,
-        //       city: shippingAddress!.city!,
-        //       country: shippingAddress!.country!,
-        //       postalCode: shippingAddress!.postal_code!,
-        //       street: shippingAddress!.line1!,
-        //       state: shippingAddress!.state,
-        //     },
-        //   },
-        //   billingAddress: {
-        //     create: {
-        //       name: session.customer_details!.name!,
-        //       city: billingAddress!.city!,
-        //       country: billingAddress!.country!,
-        //       postalCode: billingAddress!.postal_code!,
-        //       street: billingAddress!.line1!,
-        //       state: billingAddress!.state,
-        //     },
-        //   },
+          shippingAddress: {
+            create: {
+              name: session.customer_details!.name!,
+              city: shippingAddress!.city!,
+              country: shippingAddress!.country!,
+              postalCode: shippingAddress!.postal_code!,
+              street: shippingAddress!.line1!,
+              state: shippingAddress!.state,
+            },
+          },
+          billingAddress: {
+            create: {
+              name: session.customer_details!.name!,
+              city: billingAddress!.city!,
+              country: billingAddress!.country!,
+              postalCode: billingAddress!.postal_code!,
+              street: billingAddress!.line1!,
+              state: billingAddress!.state,
+            },
+          },
         },
       })
     }
