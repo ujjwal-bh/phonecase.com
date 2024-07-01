@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
 
-export default function page() {
+export default function Upload() {
   const {toast} = useToast()
   const [isDragOver, setIsDragOver] = useState(false);
   const [isPending, startTransition] = useTransition();

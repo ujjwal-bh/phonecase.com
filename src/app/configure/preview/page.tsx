@@ -8,7 +8,7 @@ interface IProps {
     [key: string]: string | string[] | undefined;
   };
 }
-const page = async ({ searchParams }: IProps) => {
+const Preview = async ({ searchParams }: IProps) => {
   const { id } = searchParams;
   if (!id || typeof id !== "string") return notFound();
 
@@ -21,4 +21,4 @@ const page = async ({ searchParams }: IProps) => {
   )
 };
 
-export default page;
+export default Preview;
