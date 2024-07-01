@@ -9,15 +9,25 @@ import { useMutation } from "@tanstack/react-query";
 import { ArrowRight, Check } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
+import { createCheckoutSession } from "./actions";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs"
+import LoginModal from "@/components/LoginModal";
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
+  const router = useRouter()
+  const {toast} = useToast()
+  const {user } = useKindeBrowserClient()
+
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false);
+
   useEffect(() => {
     setShowConfetti(true);
   }, []);
 
   const { color, model, finish, material } = configuration;
-
   const tw = COLORS.find(
     (supportedColor) => supportedColor.value === color
   )?.tw;
@@ -31,11 +41,36 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   if(finish === "textured") totalPrice += PRODUCT_PRICES.finish.textured;
 
 
-  const {} = useMutation({
+  const {mutate: createPaymentSession} = useMutation({
     mutationKey: ["get-checkout-session"],
-    // mutationFn: null
+    mutationFn:  createCheckoutSession,
+    onSuccess: ({url}) => {
+      if(url){
+        router.push(url)
+      } else {
+        throw new Error("Unable to retireve payment URL")
+      }
+    },
+    onError: ()=> {
+      toast({
+        title: "something went wrong",
+        description: "there was an error on our end please try again.",
+        variant: "destructive"
+      })
+    }
   })
 
+
+  const handleCheckout = () => {
+    if(user){
+      // create payment session
+      createPaymentSession({configId: configuration.id})
+    } else {
+      // need to login
+      localStorage.setItem("PHONECASE_CONFIGID", configuration.id)
+      setIsLoginModalOpen(true)
+    }
+  }
   return (
     <>
       <div
@@ -47,6 +82,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
           config={{ elementCount: 200, spread: 90 }}
         />
       </div>
+      <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen}/>
       <div className="mt-20 grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12">
         <div className="sm:col-span-4 md:col-span-3 md:row-span-2 md:row-end-2">
           <Phone
@@ -116,7 +152,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
               </div>
             </div>
             <div className="mt-8 flex justify-end pb-12">
-                <Button className="px-4 sm:px-6 lg:px-8">Check out <ArrowRight className="h-4 w-4 ml-1.5 inline"/></Button>
+                <Button className="px-4 sm:px-6 lg:px-8" onClick={handleCheckout}>Check out <ArrowRight className="h-4 w-4 ml-1.5 inline"/></Button>
 
             </div>
           </div>
