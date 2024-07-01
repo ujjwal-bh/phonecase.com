@@ -1,42 +1,47 @@
-"use client";
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { getPaymentStatus } from "./actions";
-import { Loader2 } from "lucide-react";
-import { formatPrice } from "@/lib/utils";
-import PhonePreview from "@/components/PhonePreview";
+'use client'
 
-const ThankYou = ({ orderId }: { orderId: string }) => {
+import { useQuery } from '@tanstack/react-query'
+import { getPaymentStatus } from './actions'
+import { useSearchParams } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
+import PhonePreview from '@/components/PhonePreview'
+import { formatPrice } from '@/lib/utils'
+
+const ThankYou = () => {
+  const searchParams = useSearchParams()
+  const orderId = searchParams.get('orderId') || ''
+
   const { data } = useQuery({
-    queryKey: ["get-payment-status"],
+    queryKey: ['get-payment-status'],
     queryFn: async () => await getPaymentStatus({ orderId }),
     retry: true,
     retryDelay: 500,
-  });
+  })
 
   if (data === undefined) {
     return (
-      <div className="w-full mt-24 flex justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <h3 className="font-semibold text-xl">Loading your order ... </h3>
-          <p>This won't take long</p>
+      <div className='w-full mt-24 flex justify-center'>
+        <div className='flex flex-col items-center gap-2'>
+          <Loader2 className='h-8 w-8 animate-spin text-zinc-500' />
+          <h3 className='font-semibold text-xl'>Loading your order...</h3>
+          <p>This won't take long.</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (data === false) {
     return (
-      <div className="w-full mt-24 flex justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <h3 className="font-semibold text-xl">Verifying your payment ... </h3>
+      <div className='w-full mt-24 flex justify-center'>
+        <div className='flex flex-col items-center gap-2'>
+          <Loader2 className='h-8 w-8 animate-spin text-zinc-500' />
+          <h3 className='font-semibold text-xl'>Verifying your payment...</h3>
           <p>This might take a moment.</p>
         </div>
       </div>
-    );
+    )
   }
+
   const { configuration, billingAddress, shippingAddress, amount } = data
   const { color } = configuration
 
@@ -64,7 +69,7 @@ const ThankYou = ({ orderId }: { orderId: string }) => {
               You made a great choice!
             </h4>
             <p className='mt-2 text-sm text-zinc-600'>
-              We at <span className="font-semibold">phonecase<span className="text-primary">.com</span></span> believe that a phone case doesn't only need to
+              We at CaseCobra believe that a phone case doesn't only need to
               look good, but also last you for the years to come. We offer a
               5-year print guarantee: If you case isn't of the highest quality,
               we'll replace it for free.
@@ -141,5 +146,4 @@ const ThankYou = ({ orderId }: { orderId: string }) => {
   )
 }
 
-export default ThankYou;
-
+export default ThankYou
