@@ -71,6 +71,7 @@ export async function POST(req: Request) {
           },
         },
       });
+      
       await resend.emails.send({
         from: "Ujjwal <ujjwalbh001@gmail.com>",
         to: [event.data.object.customer_details.email],
